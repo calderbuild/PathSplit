@@ -25,6 +25,9 @@ yarn-error.log*
 # local env files
 .env
 .env*.local
+.pathsplit-agent-slots.local.json
+.playwright-cli/
+.playwright-mcp/
 
 # vercel
 .vercel
