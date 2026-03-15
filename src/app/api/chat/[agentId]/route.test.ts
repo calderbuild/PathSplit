@@ -67,7 +67,7 @@ describe('POST /api/chat/[agentId]', () => {
     const payload = (await response.json()) as { message?: string };
 
     expect(response.status).toBe(400);
-    expect(payload.message).toContain('高风险');
+    expect(payload.message).toBe('BLOCKED_TOPIC');
   });
 
   it('streams follow-up chunks when requested', async () => {

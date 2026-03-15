@@ -4,8 +4,8 @@
   --paper: #f5efe5;
   --paper-strong: #efe6d7;
   --ink: #171717;
-  --muted: #57534e;
-  --line: rgba(23, 23, 23, 0.08);
+  --muted: #5f5449;
+  --line: rgba(23, 23, 23, 0.12);
   --accent: #9a3412;
   --accent-soft: rgba(154, 52, 18, 0.14);
   --font-body: 'Avenir Next', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif;
@@ -37,8 +37,8 @@ body::before {
   pointer-events: none;
   content: '';
   background-image:
-    linear-gradient(to right, transparent 0, transparent calc(100% - 1px), rgba(23, 23, 23, 0.03) calc(100% - 1px)),
-    linear-gradient(to bottom, transparent 0, transparent calc(100% - 1px), rgba(23, 23, 23, 0.025) calc(100% - 1px));
+    linear-gradient(to right, transparent 0, transparent calc(100% - 1px), rgba(23, 23, 23, 0.018) calc(100% - 1px)),
+    linear-gradient(to bottom, transparent 0, transparent calc(100% - 1px), rgba(23, 23, 23, 0.014) calc(100% - 1px));
   background-size: 72px 72px;
   mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.58), transparent 90%);
 }
@@ -55,15 +55,15 @@ a {
   gap: 2rem;
   margin: 0 auto;
   max-width: 1480px;
-  padding: 3rem 1.25rem 6rem;
+  padding: 2.35rem 1.25rem 6rem;
 }
 
 .pathsplit-panel,
 .pathsplit-card {
   border: 1px solid var(--line);
-  background: rgba(255, 252, 247, 0.78);
+  background: rgba(255, 252, 247, 0.86);
   backdrop-filter: blur(18px);
-  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 24px 54px rgba(15, 23, 42, 0.075);
   transition:
     transform 220ms ease,
     border-color 220ms ease,
@@ -90,9 +90,21 @@ a {
   align-items: start;
 }
 
+.pathsplit-hero-copy {
+  max-width: 49rem;
+}
+
+.pathsplit-hero-title {
+  max-width: 7.3em;
+  font-size: clamp(2.7rem, 5vw, 4.2rem);
+  line-height: 0.9;
+  text-wrap: pretty;
+}
+
 .pathsplit-product-badge {
   display: inline-flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.75rem;
   border: 1px solid rgba(23, 23, 23, 0.1);
   border-radius: 999px;
@@ -100,10 +112,11 @@ a {
     linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 247, 237, 0.76)),
     rgba(255, 255, 255, 0.72);
   padding: 0.7rem 1rem;
-  font-size: 0.72rem;
+  font-size: 0.76rem;
+  font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #57534e;
+  color: #4f463d;
   box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
   backdrop-filter: blur(18px);
 }
@@ -117,46 +130,93 @@ a {
 }
 
 .pathsplit-editorial-note {
+  position: relative;
+}
+
+.pathsplit-editorial-layout {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.pathsplit-mini-card {
   border: 1px solid rgba(23, 23, 23, 0.08);
-  border-radius: 1.9rem;
-  background:
-    linear-gradient(135deg, rgba(255, 250, 243, 0.96), rgba(255, 255, 255, 0.74)),
-    rgba(255, 255, 255, 0.7);
-  padding: 1.3rem 1.4rem;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  border-radius: 1.4rem;
+  background: rgba(255, 255, 255, 0.84);
+  padding: 1rem 1.05rem;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
 }
 
 .pathsplit-section-kicker {
-  font-size: 0.72rem;
-  letter-spacing: 0.28em;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: #78716c;
+  color: #65594d;
+}
+
+.pathsplit-meta-label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #65594d;
+}
+
+.pathsplit-meta-chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(23, 23, 23, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.48rem 0.88rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #5a4f45;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.04);
 }
 
 .pathsplit-stat-card {
-  border-radius: 1.6rem;
-  border: 1px solid rgba(23, 23, 23, 0.08);
+  min-width: 0;
+  padding-right: 1rem;
+}
+
+.pathsplit-input-panel {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(255, 250, 243, 0.72)),
-    rgba(255, 255, 255, 0.72);
-  padding: 1.2rem 1.25rem;
-  backdrop-filter: blur(18px);
-  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.06);
+    linear-gradient(180deg, rgba(255, 252, 247, 0.97), rgba(255, 248, 241, 0.92)),
+    rgba(255, 252, 247, 0.86);
+  box-shadow:
+    0 30px 70px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+.pathsplit-soft-pill {
+  border-radius: 999px;
+  border: 1px solid rgba(23, 23, 23, 0.12);
+  background: rgba(255, 255, 255, 0.88);
+  padding: 0.42rem 0.82rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #5b5046;
 }
 
 .pathsplit-counter {
   border-radius: 999px;
-  border: 1px solid rgba(23, 23, 23, 0.08);
-  background: rgba(255, 255, 255, 0.72);
-  padding: 0.3rem 0.65rem;
-  font-size: 0.72rem;
-  letter-spacing: 0.14em;
+  border: 1px solid rgba(23, 23, 23, 0.12);
+  background: rgba(255, 255, 255, 0.88);
+  padding: 0.34rem 0.72rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #78716c;
+  color: #65594d;
 }
 
 .pathsplit-section-shell {
-  border: 1px solid rgba(23, 23, 23, 0.08);
+  border: 1px solid rgba(23, 23, 23, 0.1);
   border-radius: 2rem;
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(248, 250, 252, 0.7)),
@@ -167,17 +227,17 @@ a {
 
 .pathsplit-evidence-summary {
   border-left: 3px solid rgba(154, 52, 18, 0.26);
-  background: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.82);
   padding: 1rem 1.1rem;
   border-radius: 1.2rem;
 }
 
 .pathsplit-evidence-path {
   border-radius: 1.55rem;
-  border: 1px solid rgba(23, 23, 23, 0.08);
+  border: 1px solid rgba(23, 23, 23, 0.1);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(245, 245, 244, 0.74)),
-    rgba(255, 255, 255, 0.74);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(245, 245, 244, 0.84)),
+    rgba(255, 255, 255, 0.82);
   padding: 1.15rem;
 }
 
@@ -235,7 +295,7 @@ h4 {
 
 @media (min-width: 768px) {
   .pathsplit-shell {
-    padding: 4rem 2rem 7rem;
+    padding: 3rem 2rem 7rem;
   }
 
   .pathsplit-panel,
@@ -247,7 +307,44 @@ h4 {
     padding: 1.9rem;
   }
 
-  .pathsplit-editorial-note {
-    padding: 1.45rem 1.55rem;
+  .pathsplit-hero-grid {
+    gap: 2.75rem;
   }
+
+  .pathsplit-editorial-layout {
+    grid-template-columns: minmax(0, 1.25fr) minmax(9.75rem, 10.5rem) minmax(9.75rem, 10.5rem);
+    align-items: start;
+  }
+}
+
+@media (max-width: 767px) {
+  .pathsplit-hero-title {
+    max-width: 6.4em;
+  }
+}
+
+.pathsplit-lang-toggle {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.25rem;
+  z-index: 50;
+  border: 1px solid rgba(23, 23, 23, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 0.5rem 1rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink);
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  transition: all 180ms ease;
+}
+
+.pathsplit-lang-toggle:hover {
+  border-color: rgba(23, 23, 23, 0.2);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+  transform: translateY(-1px);
 }

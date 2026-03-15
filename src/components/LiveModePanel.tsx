@@ -2,36 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { STARTUP_AGENTS } from '@/lib/constants';
+import { useI18n } from '@/lib/i18n/context';
 import type { AgentSlotStatus, FollowupResponse, SecondMeSessionStatus } from '@/lib/types';
 
-function formatExpiry(value?: number) {
-  if (!value) {
-    return '未连接';
-  }
-
-  return new Intl.DateTimeFormat('zh-CN', {
-    hour: '2-digit',
-    minute: '2-digit',
-    month: 'numeric',
-    day: 'numeric',
-  }).format(new Date(value));
-}
-
-function getInitial(name?: string) {
-  return (name?.trim().charAt(0) || '我').toUpperCase();
-}
-
-function formatSlotUpdate(value?: number) {
-  if (!value) {
-    return '未绑定';
-  }
-
-  return new Intl.DateTimeFormat('zh-CN', {
-    month: 'numeric',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(value));
+function getInitial(name: string | undefined, fallback: string) {
+  return (name?.trim().charAt(0) || fallback).toUpperCase();
 }
 
 function slotLabel(agentId: string) {
@@ -51,6 +26,9 @@ export function LiveModePanel({
   session: SecondMeSessionStatus;
   onAsk: (prompt: string) => Promise<FollowupResponse>;
 }) {
+  const { locale, t } = useI18n();
+  const dateLocale = locale === 'zh' ? 'zh-CN' : 'en-US';
+
   const [draft, setDraft] = useState(question);
   const [answer, setAnswer] = useState<string>();
   const [error, setError] = useState<string>();
@@ -60,22 +38,32 @@ export function LiveModePanel({
   const [slotMessage, setSlotMessage] = useState<string>();
   const [bindingAgentId, setBindingAgentId] = useState<string>();
 
+  function formatExpiry(value?: number) {
+    if (!value) return t.live.notConnected;
+    return new Intl.DateTimeFormat(dateLocale, {
+      hour: '2-digit',
+      minute: '2-digit',
+      month: 'numeric',
+      day: 'numeric',
+    }).format(new Date(value));
+  }
+
+  function formatSlotUpdate(value?: number) {
+    if (!value) return '';
+    return new Intl.DateTimeFormat(dateLocale, {
+      month: 'numeric',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date(value));
+  }
+
   async function loadSlots() {
-    const response = await fetch('/api/auth/agent-slots', {
-      cache: 'no-store',
-    });
-
-    if (!response.ok) {
-      return;
-    }
-
+    const response = await fetch('/api/auth/agent-slots', { cache: 'no-store' });
+    if (!response.ok) return;
     const payload = (await response.json().catch(() => null)) as
-      | {
-          enabled?: boolean;
-          slots?: AgentSlotStatus[];
-        }
+      | { enabled?: boolean; slots?: AgentSlotStatus[] }
       | null;
-
     if (payload?.enabled && Array.isArray(payload.slots)) {
       setSlots(payload.slots);
     }
@@ -86,10 +74,7 @@ export function LiveModePanel({
   }, [question]);
 
   useEffect(() => {
-    if (!injectedPrompt?.trim()) {
-      return;
-    }
-
+    if (!injectedPrompt?.trim()) return;
     setDraft(injectedPrompt);
   }, [injectedPrompt, promptVersion]);
 
@@ -100,12 +85,11 @@ export function LiveModePanel({
   async function askLiveSelf() {
     setIsAsking(true);
     setError(undefined);
-
     try {
       const response = await onAsk(draft);
       setAnswer(response.answer);
     } catch (issue) {
-      setError(issue instanceof Error ? issue.message : 'SecondMe 暂时不可用。');
+      setError(issue instanceof Error ? issue.message : t.errors.secondmeUnavailable);
     } finally {
       setIsAsking(false);
     }
@@ -115,42 +99,28 @@ export function LiveModePanel({
     setBindingAgentId(agentId);
     setSlotError(undefined);
     setSlotMessage(undefined);
-
     try {
       const response = await fetch('/api/auth/agent-slots', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ agentId, seed: true }),
       });
-
       const payload = (await response.json().catch(() => null)) as
-        | {
-            message?: string;
-            slots?: AgentSlotStatus[];
-            seeded?: {
-              seeded: number;
-              total: number;
-            } | null;
-          }
+        | { message?: string; slots?: AgentSlotStatus[]; seeded?: { seeded: number; total: number } | null }
         | null;
-
       if (!response.ok) {
-        throw new Error(payload?.message ?? '绑定 Agent 失败。');
+        throw new Error(payload?.message ?? t.errors.bindFailed);
       }
-
       if (Array.isArray(payload?.slots)) {
         setSlots(payload.slots);
       }
-
       if (payload?.seeded) {
-        setSlotMessage(`已绑定 ${slotLabel(agentId)}，并注入 ${payload.seeded.seeded}/${payload.seeded.total} 条记忆。`);
+        setSlotMessage(t.errors.bindSuccessWithSeeds(slotLabel(agentId), payload.seeded.seeded, payload.seeded.total));
       } else {
-        setSlotMessage(`已绑定 ${slotLabel(agentId)}。`);
+        setSlotMessage(t.errors.bindSuccess(slotLabel(agentId)));
       }
     } catch (issue) {
-      setSlotError(issue instanceof Error ? issue.message : '绑定 Agent 失败。');
+      setSlotError(issue instanceof Error ? issue.message : t.errors.bindFailed);
     } finally {
       setBindingAgentId(undefined);
     }
@@ -160,19 +130,19 @@ export function LiveModePanel({
     <section className="pathsplit-panel overflow-hidden">
       <div className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
         <div className="space-y-4">
-          <div className="text-xs uppercase tracking-[0.32em] text-stone-500">SecondMe 真人网络</div>
+          <div className="pathsplit-section-kicker">{t.live.kicker}</div>
           <div className="space-y-3">
-            <h2 className="text-3xl font-semibold text-stone-950">真人网络，不再停留在样本推演</h2>
+            <h2 className="text-3xl font-semibold text-stone-950">{t.live.title}</h2>
             <p className="text-base leading-7 text-stone-700">
-              这里连接的是你自己的 SecondMe。上面的三条人生线可以是 mixed mode，到了这一区域，就进入真人授权与真人追问链路。
+              {t.live.description}
             </p>
           </div>
 
           <div className="rounded-[1.6rem] border border-black/8 bg-stone-50/80 p-4">
-          <div className="text-xs uppercase tracking-[0.24em] text-stone-500">连接状态</div>
+          <div className="pathsplit-meta-label">{t.live.connectionLabel}</div>
             {!session.available ? (
               <p className="mt-3 text-sm leading-7 text-stone-700">
-                还没有配置 `SECONDME_CLIENT_ID` / `SECONDME_CLIENT_SECRET`，当前只开放 PathSplit 的基础产品体验。
+                {t.live.noConfig}
               </p>
             ) : session.connected ? (
               <div className="mt-3 space-y-3">
@@ -185,13 +155,13 @@ export function LiveModePanel({
                     />
                   ) : (
                     <div className="flex h-12 w-12 items-center justify-center rounded-full border border-black/8 bg-stone-900 text-sm font-semibold text-stone-50">
-                      {getInitial(session.user?.name)}
+                      {getInitial(session.user?.name, t.misc.fallbackInitial)}
                     </div>
                   )}
                   <div>
-                    <div className="text-sm font-medium text-stone-950">{session.user?.name || '已连接的 SecondMe'}</div>
-                  <div className="text-xs uppercase tracking-[0.18em] text-stone-500">
-                      Token 截止 {formatExpiry(session.expiresAt)}
+                    <div className="text-sm font-medium text-stone-950">{session.user?.name || t.misc.connectedFallbackName}</div>
+                  <div className="pathsplit-meta-label">
+                      {t.live.tokenExpiry} {formatExpiry(session.expiresAt)}
                     </div>
                   </div>
                 </div>
@@ -200,10 +170,10 @@ export function LiveModePanel({
                     href="/api/auth/logout"
                     className="rounded-full border border-black/10 px-4 py-2 text-xs uppercase tracking-[0.2em] text-stone-600 transition hover:border-black/20 hover:text-stone-950"
                   >
-                    断开连接
+                    {t.live.disconnect}
                   </a>
                   {session.scope.length > 0 ? (
-                    <div className="rounded-full border border-black/8 bg-white px-4 py-2 text-[11px] uppercase tracking-[0.2em] text-stone-500">
+                    <div className="pathsplit-meta-chip">
                       scopes: {session.scope.join(', ')}
                     </div>
                   ) : null}
@@ -212,13 +182,13 @@ export function LiveModePanel({
             ) : (
               <div className="mt-3 space-y-3">
                 <p className="text-sm leading-7 text-stone-700">
-                  连接后可以把证据卡和主问题直接问给你的 SecondMe，而不是只停留在当前的记忆视角。
+                  {t.live.connectPrompt}
                 </p>
                 <a
                   href="/api/auth/login?source=live-panel"
                   className="inline-flex rounded-full bg-stone-900 px-5 py-3 text-xs uppercase tracking-[0.24em] text-stone-50 transition hover:bg-stone-800"
                 >
-                  连接 SecondMe，进入真人链路
+                  {t.live.connectCta}
                 </a>
               </div>
             )}
@@ -228,13 +198,13 @@ export function LiveModePanel({
             <div className="rounded-[1.6rem] border border-black/8 bg-white/70 p-4">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <div className="text-xs uppercase tracking-[0.24em] text-stone-500">并行真人槽位</div>
+                  <div className="pathsplit-meta-label">{t.live.slotKicker}</div>
                   <div className="mt-1 text-sm leading-7 text-stone-700">
-                    依次登录 3 个 SecondMe 账号，各绑定到一条人生线。绑定后 `/api/explore` 会优先走真实分身，缺失的槽位自动回落记忆视角。
+                    {t.live.slotDescription}
                   </div>
                 </div>
-                <div className="rounded-full border border-black/8 bg-stone-50 px-4 py-2 text-[11px] uppercase tracking-[0.22em] text-stone-500">
-                  ready {slots.filter((slot) => slot.configured).length}/{slots.length}
+                <div className="pathsplit-meta-chip">
+                  {t.live.slotReady} {slots.filter((slot) => slot.configured).length}/{slots.length}
                 </div>
               </div>
 
@@ -248,7 +218,7 @@ export function LiveModePanel({
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div>
                           <div className="text-sm font-semibold text-stone-950">{slotLabel(slot.agentId)}</div>
-                          <div className="mt-1 text-xs uppercase tracking-[0.2em] text-stone-500">
+                          <div className="pathsplit-meta-label mt-1">
                             {slot.configured ? `ready via ${slot.source}` : 'empty slot'}
                           </div>
                         </div>
@@ -259,26 +229,26 @@ export function LiveModePanel({
                           className="rounded-full border border-black/10 px-4 py-2 text-[11px] uppercase tracking-[0.2em] text-stone-700 transition hover:border-black/20 hover:text-stone-950 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {lockedByEnv
-                            ? 'Env Locked'
+                            ? t.live.bindEnvLocked
                             : isBinding
-                              ? 'Binding...'
+                              ? t.live.bindBinding
                               : slot.configured
-                                ? '重新绑定当前账号'
-                                : '绑定当前账号并注入'}
+                                ? t.live.bindConfigured
+                                : t.live.bindEmpty}
                         </button>
                       </div>
 
-                      <div className="mt-3 flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] text-stone-500">
-                        <span className="rounded-full border border-black/8 bg-white px-3 py-2">
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <span className="pathsplit-meta-chip">
                           seeds {slot.memoryCount}
                         </span>
                         {slot.slotName ? (
-                          <span className="rounded-full border border-black/8 bg-white px-3 py-2">
+                          <span className="pathsplit-meta-chip">
                             {slot.slotName}
                           </span>
                         ) : null}
                         {slot.updatedAt ? (
-                          <span className="rounded-full border border-black/8 bg-white px-3 py-2">
+                          <span className="pathsplit-meta-chip">
                             synced {formatSlotUpdate(slot.updatedAt)}
                           </span>
                         ) : null}
@@ -297,15 +267,15 @@ export function LiveModePanel({
         <div className="rounded-[2rem] border border-black/8 bg-white/75 p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <div className="text-xs uppercase tracking-[0.24em] text-stone-500">真人问题</div>
-              <div className="mt-1 text-lg font-semibold text-stone-950">把主问题同步给你的 SecondMe</div>
+              <div className="pathsplit-meta-label">{t.live.questionKicker}</div>
+              <div className="mt-1 text-lg font-semibold text-stone-950">{t.live.questionTitle}</div>
             </div>
             <button
               type="button"
               onClick={() => setDraft(question)}
               className="rounded-full border border-black/10 px-4 py-2 text-xs uppercase tracking-[0.2em] text-stone-600 transition hover:border-black/20 hover:text-stone-950"
             >
-              同步主问题
+              {t.live.syncButton}
             </button>
           </div>
 
@@ -314,7 +284,7 @@ export function LiveModePanel({
             onChange={(event) => setDraft(event.target.value)}
             disabled={!session.connected}
             className="mt-4 min-h-40 w-full resize-none rounded-[1.4rem] border border-black/10 bg-stone-50 px-5 py-4 text-sm leading-8 text-stone-900 outline-none transition focus:border-stone-900 disabled:cursor-not-allowed disabled:opacity-60"
-            placeholder="连接后，把你的真实问题问给自己的 SecondMe。"
+            placeholder={t.misc.livePlaceholder}
             maxLength={500}
           />
 
@@ -325,17 +295,17 @@ export function LiveModePanel({
               disabled={!session.connected || isAsking}
               className="rounded-full bg-[linear-gradient(135deg,#0f172a,#0f766e)] px-6 py-3 text-xs uppercase tracking-[0.24em] text-stone-50 transition hover:translate-y-[-1px] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {isAsking ? '真人追问中...' : '问我的 SecondMe'}
+              {isAsking ? t.live.askLoading : t.live.askIdle}
             </button>
-            <span className="text-sm leading-7 text-stone-600">
-              这里是实时真人分身链路，不会伪装成上面的创业者角色，也不会冒充上面的三条路径视角。
+            <span className="text-sm leading-7 text-stone-700">
+              {t.live.askHelper}
             </span>
           </div>
 
           {error ? <p className="mt-4 text-sm leading-7 text-rose-700">{error}</p> : null}
           {answer ? (
             <div className="mt-5 rounded-[1.5rem] border border-emerald-200 bg-emerald-50/80 p-5">
-              <div className="text-xs uppercase tracking-[0.24em] text-emerald-700">SecondMe 回复</div>
+              <div className="pathsplit-meta-label text-emerald-800">{t.live.replyLabel}</div>
               <p className="mt-3 text-sm leading-8 text-stone-800">{answer}</p>
             </div>
           ) : null}

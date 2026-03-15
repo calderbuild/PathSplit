@@ -3,20 +3,8 @@
 import { useState } from 'react';
 import { AgentAvatar } from './AgentAvatar';
 import { SafetyLabel } from './SafetyLabel';
+import { useI18n } from '@/lib/i18n/context';
 import type { AgentCardState, FollowupResponse, FollowupStreamHandlers } from '@/lib/types';
-
-function statusCopy(status: AgentCardState['status']) {
-  switch (status) {
-    case 'waiting':
-      return '等待生成';
-    case 'streaming':
-      return '正在展开';
-    case 'done':
-      return '已完成';
-    case 'error':
-      return '暂不可用';
-  }
-}
 
 export function PerspectiveCard({
   card,
@@ -29,13 +17,21 @@ export function PerspectiveCard({
     handlers?: FollowupStreamHandlers,
   ) => Promise<FollowupResponse>;
 }) {
+  const { t } = useI18n();
   const isStreaming = card.status === 'streaming';
-  const [draft, setDraft] = useState('创业最难熬的时刻是什么？');
+  const [draft, setDraft] = useState(t.card.defaultDraft);
   const [answer, setAnswer] = useState<string>();
   const [answerMode, setAnswerMode] = useState<'mock' | 'secondme'>();
   const [isAsking, setIsAsking] = useState(false);
   const [isStreamingAnswer, setIsStreamingAnswer] = useState(false);
   const [followupError, setFollowupError] = useState<string>();
+
+  const statusLabel = {
+    waiting: t.card.waiting,
+    streaming: t.card.streaming,
+    done: t.card.done,
+    error: t.card.error,
+  }[card.status];
 
   async function askFollowup() {
     setIsAsking(true);
@@ -56,7 +52,7 @@ export function PerspectiveCard({
       setAnswer(response.answer);
       setAnswerMode(response.mode);
     } catch (error) {
-      setFollowupError(error instanceof Error ? error.message : '追问暂时失败。');
+      setFollowupError(error instanceof Error ? error.message : t.errors.followupFailed);
     } finally {
       setIsAsking(false);
       setIsStreamingAnswer(false);
@@ -69,7 +65,7 @@ export function PerspectiveCard({
         <div className="flex items-center gap-3">
           <AgentAvatar agent={card.meta} />
           <div>
-            <div className="text-sm uppercase tracking-[0.28em] text-stone-500">{statusCopy(card.status)}</div>
+            <div className="pathsplit-meta-label">{statusLabel}</div>
             <h3 className="mt-1 text-xl font-semibold text-stone-950">{card.meta.label}</h3>
           </div>
         </div>
@@ -78,7 +74,7 @@ export function PerspectiveCard({
 
       <div className="space-y-2">
         <p className="text-sm leading-6 text-stone-700">{card.meta.persona.background}</p>
-        <p className="text-xs uppercase tracking-[0.22em] text-stone-500">{card.meta.persona.currentState}</p>
+        <p className="pathsplit-meta-label">{card.meta.persona.currentState}</p>
       </div>
 
       <div className="flex-1 rounded-[1.6rem] border border-black/6 bg-stone-50/90 p-5">
@@ -95,14 +91,14 @@ export function PerspectiveCard({
         )}
       </div>
 
-      <footer className="flex items-center justify-between text-xs uppercase tracking-[0.22em] text-stone-500">
+      <footer className="pathsplit-meta-label flex items-center justify-between">
         <span>{card.meta.persona.name}</span>
-        <span>{card.meta.memoryMode === 'mock' ? 'PathSplit 记忆视角' : 'SecondMe 真人分身'}</span>
+        <span>{card.meta.memoryMode === 'mock' ? t.card.mockMode : t.card.realMode}</span>
       </footer>
 
       {card.status === 'done' ? (
         <div className="rounded-[1.5rem] border border-black/8 bg-white/70 p-4">
-          <div className="text-xs uppercase tracking-[0.24em] text-stone-500">继续追问</div>
+          <div className="pathsplit-meta-label">{t.card.followUp}</div>
           <textarea
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
@@ -116,11 +112,11 @@ export function PerspectiveCard({
               disabled={isAsking}
               className="rounded-full bg-stone-900 px-4 py-2 text-xs uppercase tracking-[0.22em] text-stone-50 transition hover:bg-stone-800 disabled:opacity-50"
             >
-              {isAsking ? '追问中...' : '追问这个视角'}
+              {isAsking ? t.card.askingButton : t.card.askButton}
             </button>
             {answerMode ? (
-              <span className="text-[11px] uppercase tracking-[0.22em] text-stone-500">
-                {answerMode === 'mock' ? 'PathSplit 回复' : 'SecondMe 回复'}
+              <span className="pathsplit-meta-label">
+                {answerMode === 'mock' ? t.card.mockReply : t.card.realReply}
               </span>
             ) : null}
           </div>

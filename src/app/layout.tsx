@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
+import { Providers } from '@/components/Providers';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'PathSplit - 人生平行宇宙',
-  description: '一个把人生决策变成可追问产品体验的应用: 三条路径，一张证据卡，一次真人继续追问。',
+  title: 'PathSplit - Parallel Lives Explorer',
+  description:
+    'Turn life decisions into queryable product experiences: three paths, one evidence card, one real-human follow-up.',
 };
 
 export default function RootLayout({
@@ -13,7 +15,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
-      <body>{children}</body>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

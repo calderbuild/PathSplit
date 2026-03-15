@@ -1,12 +1,5 @@
 import type { AgentMeta, PresetTopic } from './types';
 
-export const APP_COPY = {
-  title: 'PathSplit',
-  subtitle: '把人生决策，从搜索结果升级成可追问的真人网络。',
-  description:
-    'PathSplit 是一个人生决策产品。你先看到三条平行人生路径，再把证据卡接入自己的 SecondMe，把问题继续问深一层。',
-};
-
 export const PRESET_TOPICS: PresetTopic[] = [
   {
     id: 'startup-main',
@@ -88,11 +81,3 @@ export const STARTUP_AGENTS: AgentMeta[] = [
 ];
 
 export const STARTUP_DIMENSIONS = ['现金流', '身份落差', '关系代价', '后撤成本'];
-
-export const HERO_STATS = [
-  { label: '产品主场景', value: '大厂跳创业' },
-  { label: '并行视角', value: '3 条人生路径' },
-  { label: '真人网络', value: 'OAuth 继续追问' },
-];
-
-export const TRUST_LABEL = 'PathSplit 记忆视角 | 基于真实经历整理的路径资料';

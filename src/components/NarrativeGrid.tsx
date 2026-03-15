@@ -1,4 +1,7 @@
+'use client';
+
 import { PerspectiveCard } from './PerspectiveCard';
+import { useI18n } from '@/lib/i18n/context';
 import type { AgentCardState, FollowupResponse, FollowupStreamHandlers } from '@/lib/types';
 
 export function NarrativeGrid({
@@ -14,14 +17,16 @@ export function NarrativeGrid({
     handlers?: FollowupStreamHandlers,
   ) => Promise<FollowupResponse>;
 }) {
+  const { t } = useI18n();
+
   return (
     <section className="space-y-6">
       <div className="pathsplit-section-shell flex flex-col gap-4">
-        <div className="pathsplit-section-kicker">决策拆解</div>
+        <div className="pathsplit-section-kicker">{t.narrative.kicker}</div>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <p className="max-w-3xl text-lg leading-8 text-stone-800">{rationale}</p>
-          <div className="rounded-full border border-black/8 bg-white/75 px-4 py-2 text-[11px] uppercase tracking-[0.22em] text-stone-500">
-            3 条路径并行展开
+          <div className="pathsplit-meta-chip">
+            {t.narrative.chip}
           </div>
         </div>
       </div>

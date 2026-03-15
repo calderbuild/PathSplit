@@ -13,19 +13,16 @@ export function validateUserInput(question: string): SafetyResult {
   const trimmed = question.trim();
 
   if (!trimmed) {
-    return { allowed: false, reason: '先把问题说清楚。一个具体困惑，比一个宏大主题更有价值。' };
+    return { allowed: false, reason: 'EMPTY_INPUT' };
   }
 
   if (trimmed.length > MAX_INPUT_LENGTH) {
-    return { allowed: false, reason: '先收窄一下问题。当前产品单次最多支持 500 字输入。' };
+    return { allowed: false, reason: 'INPUT_TOO_LONG' };
   }
 
   const blocked = BLOCKED_PATTERNS.find((pattern) => pattern.test(trimmed));
   if (blocked) {
-    return {
-      allowed: false,
-      reason: '当前产品不处理医疗、法律、自伤或投资等高风险决策。请换成职业和人生路径类问题。',
-    };
+    return { allowed: false, reason: 'BLOCKED_TOPIC' };
   }
 
   return { allowed: true };
@@ -36,5 +33,5 @@ export function wrapUserInput(question: string) {
 }
 
 export function redactErrorMessage(_: unknown) {
-  return '服务暂时不可用，请稍后重试。';
+  return 'SERVICE_UNAVAILABLE';
 }

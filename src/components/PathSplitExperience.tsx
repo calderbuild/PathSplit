@@ -1,12 +1,14 @@
 'use client';
 
 import { startTransition, useEffect, useRef, useState } from 'react';
-import { APP_COPY, HERO_STATS, PRESET_TOPICS } from '@/lib/constants';
+import { PRESET_TOPICS } from '@/lib/constants';
+import { useI18n } from '@/lib/i18n/context';
 import { QuestionInput } from './QuestionInput';
 import { NarrativeGrid } from './NarrativeGrid';
 import { EvidenceCard } from './EvidenceCard';
 import { LiveModePanel } from './LiveModePanel';
 import { OAuthConversionPanel } from './OAuthConversionPanel';
+import { LanguageToggle } from './LanguageToggle';
 import type {
   AgentCardState,
   EvidenceCard as EvidenceCardType,
@@ -17,49 +19,41 @@ import type {
   SecondMeSessionStatus,
 } from '@/lib/types';
 
-function getErrorMessage(payload: FollowupResponse | { message?: string } | null) {
+function getErrorMessage(
+  payload: FollowupResponse | { message?: string } | null,
+  fallback: string,
+) {
   if (payload && 'message' in payload && typeof payload.message === 'string') {
     return payload.message;
   }
 
-  return '追问暂时失败。';
+  return fallback;
 }
 
-function getAuthNotice(auth: string | null, source: string | null) {
+function getAuthNotice(
+  auth: string | null,
+  source: string | null,
+  authT: { connected: string; connectedEvidence: string; connectedLive: string; denied: string; disconnected: string; failedState: string; failedExchange: string; misconfigured: string },
+) {
   switch (auth) {
     case 'connected':
       return {
         tone: 'success' as const,
         message:
           source === 'evidence-card'
-            ? 'SecondMe 已连接。现在可以把刚才的证据卡直接同步给真人分身。'
-            : 'SecondMe 已连接。真人能力区已经解锁，可以继续追问。',
+            ? `${authT.connected} ${authT.connectedEvidence}`
+            : `${authT.connected} ${authT.connectedLive}`,
       };
     case 'denied':
-      return {
-        tone: 'warning' as const,
-        message: '你取消了 SecondMe 授权，当前产品体验仍然可继续。',
-      };
+      return { tone: 'warning' as const, message: authT.denied };
     case 'disconnected':
-      return {
-        tone: 'warning' as const,
-        message: 'SecondMe 已断开，当前会退回 PathSplit 的路径体验模式。',
-      };
+      return { tone: 'warning' as const, message: authT.disconnected };
     case 'failed-state':
-      return {
-        tone: 'error' as const,
-        message: 'OAuth 状态校验失败，请重新发起连接。',
-      };
+      return { tone: 'error' as const, message: authT.failedState };
     case 'failed-exchange':
-      return {
-        tone: 'error' as const,
-        message: 'SecondMe 授权完成了，但令牌交换失败，请稍后重试。',
-      };
+      return { tone: 'error' as const, message: authT.failedExchange };
     case 'misconfigured':
-      return {
-        tone: 'error' as const,
-        message: '当前环境还没配好 SecondMe OAuth，暂时只能运行 PathSplit 的基础体验。',
-      };
+      return { tone: 'error' as const, message: authT.misconfigured };
     default:
       return null;
   }
@@ -120,6 +114,8 @@ async function consumeSseStream(
 async function consumeFollowupStream(
   url: string,
   prompt: string,
+  errorFallback: string,
+  noContentError: string,
   handlers?: FollowupStreamHandlers,
 ) {
   const response = await fetch(url, {
@@ -135,11 +131,11 @@ async function consumeFollowupStream(
       | FollowupResponse
       | { message?: string }
       | null;
-    throw new Error(getErrorMessage(payload));
+    throw new Error(getErrorMessage(payload, errorFallback));
   }
 
   if (!response.body) {
-    throw new Error('追问流没有返回内容。');
+    throw new Error(noContentError);
   }
 
   const reader = response.body.getReader();
@@ -195,6 +191,7 @@ async function consumeFollowupStream(
 }
 
 export function PathSplitExperience() {
+  const { t } = useI18n();
   const [question, setQuestion] = useState(PRESET_TOPICS[0].prompt);
   const [cards, setCards] = useState<AgentCardState[]>([]);
   const [evidenceCard, setEvidenceCard] = useState<EvidenceCardType | null>(null);
@@ -239,7 +236,7 @@ export function PathSplitExperience() {
     }
 
     const url = new URL(window.location.href);
-    const notice = getAuthNotice(url.searchParams.get('auth'), url.searchParams.get('auth_source'));
+    const notice = getAuthNotice(url.searchParams.get('auth'), url.searchParams.get('auth_source'), t.auth);
     if (!notice) {
       return;
     }
@@ -248,7 +245,7 @@ export function PathSplitExperience() {
     url.searchParams.delete('auth');
     url.searchParams.delete('auth_source');
     window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
-  }, []);
+  }, [t.auth]);
 
   useEffect(() => {
     if (cards.length < 1) {
@@ -298,7 +295,13 @@ export function PathSplitExperience() {
     handlers?: FollowupStreamHandlers,
   ): Promise<FollowupResponse> {
     if (handlers) {
-      return consumeFollowupStream(`/api/chat/${agentId}?stream=1`, prompt, handlers);
+      return consumeFollowupStream(
+        `/api/chat/${agentId}?stream=1`,
+        prompt,
+        t.errors.followupFailed,
+        t.errors.streamNoContent,
+        handlers,
+      );
     }
 
     const response = await fetch(`/api/chat/${agentId}`, {
@@ -315,7 +318,7 @@ export function PathSplitExperience() {
       | null;
 
     if (!response.ok) {
-      throw new Error(getErrorMessage(payload));
+      throw new Error(getErrorMessage(payload, t.errors.followupFailed));
     }
 
     return payload as FollowupResponse;
@@ -336,7 +339,7 @@ export function PathSplitExperience() {
       | null;
 
     if (!response.ok) {
-      throw new Error(getErrorMessage(payload));
+      throw new Error(getErrorMessage(payload, t.errors.followupFailed));
     }
 
     return payload as FollowupResponse;
@@ -425,49 +428,60 @@ export function PathSplitExperience() {
   const realCardCount = cards.filter((card) => card.meta.memoryMode === 'secondme').length;
   const showLivePanel = Boolean(evidenceCard) || session.connected;
 
+  function translateError(code?: string) {
+    if (!code) return undefined;
+    const known = t.errors[code as keyof typeof t.errors];
+    return typeof known === 'string' ? known : code;
+  }
+
   return (
     <main className="pathsplit-shell">
-      <section className="pathsplit-hero-grid grid gap-10 xl:grid-cols-[1.15fr_0.85fr]">
-        <div className="space-y-8">
+      <LanguageToggle />
+      <section className="pathsplit-hero-grid grid gap-10 xl:grid-cols-[minmax(0,1fr)_27.75rem]">
+        <div className="pathsplit-hero-copy space-y-8">
           <div className="space-y-5">
             <div className="pathsplit-product-badge">
               <span className="pathsplit-product-dot" />
-              <span>PathSplit 产品</span>
-              <span className="text-stone-300">/</span>
-              <span className="text-stone-400">知乎 x Second Me 黑客松作品</span>
+              <span>{t.hero.badge}</span>
+              <span className="text-stone-300">·</span>
+              <span className="text-stone-600">{t.hero.badgeSub}</span>
             </div>
             <div className="space-y-4">
-              <h1 className="max-w-4xl text-6xl leading-[0.92] font-semibold tracking-[-0.04em] text-stone-950 md:text-7xl">
-                {APP_COPY.subtitle}
+              <h1 className="pathsplit-hero-title max-w-4xl font-semibold tracking-[-0.05em] text-stone-950">
+                {t.hero.title.map((line, i) => (
+                  <span key={i} className="block md:whitespace-nowrap">{line}</span>
+                ))}
               </h1>
-              <p className="max-w-2xl text-lg leading-8 text-stone-700">{APP_COPY.description}</p>
+              <p className="max-w-2xl text-[1.08rem] leading-8 text-stone-700">{t.hero.description}</p>
             </div>
           </div>
 
-          <div className="pathsplit-editorial-note space-y-4">
-            <div className="pathsplit-section-kicker">产品视角</div>
-            <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
-              <p className="max-w-2xl text-base leading-8 text-stone-700">
-                它不是一个给建议的问答页，而是一条更像产品主流程的决策体验: 先展开三条人生路径，再把证据卡接入真人网络，继续追问真实分身。
-              </p>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="rounded-[1.4rem] border border-black/8 bg-white/70 p-4">
-                  <div className="text-xs uppercase tracking-[0.24em] text-stone-500">适合谁</div>
-                  <p className="mt-2 text-sm leading-7 text-stone-700">正在权衡大厂、创业、回撤成本的人。</p>
-                </div>
-                <div className="rounded-[1.4rem] border border-black/8 bg-white/70 p-4">
-                  <div className="text-xs uppercase tracking-[0.24em] text-stone-500">你会得到什么</div>
-                  <p className="mt-2 text-sm leading-7 text-stone-700">三条路径、一张证据卡、一次真人继续追问。</p>
-                </div>
+          <div className="pathsplit-editorial-note">
+            <div className="pathsplit-editorial-layout">
+              <div className="space-y-4">
+                <div className="pathsplit-section-kicker">{t.editorial.kicker}</div>
+                <p className="max-w-3xl text-base leading-8 text-stone-700">
+                  {t.editorial.body}
+                </p>
+              </div>
+              <div className="pathsplit-mini-card">
+                <div className="pathsplit-meta-label">{t.editorial.whoFor.label}</div>
+                <p className="mt-2 text-sm leading-7 text-stone-700">{t.editorial.whoFor.body}</p>
+              </div>
+              <div className="pathsplit-mini-card">
+                <div className="pathsplit-meta-label">{t.editorial.whatYouGet.label}</div>
+                <p className="mt-2 text-sm leading-7 text-stone-700">{t.editorial.whatYouGet.body}</p>
               </div>
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3">
-            {HERO_STATS.map((item) => (
+          <div className="pathsplit-stat-strip grid gap-6 sm:grid-cols-3">
+            {[t.stats.scene, t.stats.perspectives, t.stats.network].map((item) => (
               <div key={item.label} className="pathsplit-stat-card">
-                <div className="text-xs uppercase tracking-[0.28em] text-stone-500">{item.label}</div>
-                <div className="mt-3 text-2xl font-semibold text-stone-950">{item.value}</div>
+                <div className="pathsplit-meta-label">{item.label}</div>
+                <div className="mt-3 whitespace-nowrap text-[1.85rem] leading-none font-semibold text-stone-950">
+                  {item.value}
+                </div>
               </div>
             ))}
           </div>
@@ -476,7 +490,7 @@ export function PathSplitExperience() {
         <QuestionInput
           value={question}
           loading={isLoading}
-          safetyError={safetyError}
+          safetyError={translateError(safetyError)}
           sessionAvailable={session.available}
           sessionConnected={session.connected}
           presets={PRESET_TOPICS}
