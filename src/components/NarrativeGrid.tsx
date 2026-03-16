@@ -20,18 +20,18 @@ export function NarrativeGrid({
   const { t } = useI18n();
 
   return (
-    <section className="space-y-6">
-      <div className="pathsplit-section-shell flex flex-col gap-4">
-        <div className="pathsplit-section-kicker">{t.narrative.kicker}</div>
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <p className="max-w-3xl text-lg leading-8 text-stone-800">{rationale}</p>
+    <section className="space-y-5">
+      <div className="pathsplit-section-shell flex flex-col gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="pathsplit-section-kicker">{t.narrative.kicker}</div>
           <div className="pathsplit-meta-chip">
             {t.narrative.chip}
           </div>
         </div>
+        <p className="max-w-3xl text-[0.94rem] leading-7 text-stone-700">{rationale}</p>
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-3">
+      <div className="grid gap-4 xl:grid-cols-3">
         {cards.map((card, index) => (
           <div key={card.meta.id} className="pathsplit-rise" style={{ animationDelay: `${index * 120}ms` }}>
             <PerspectiveCard card={card} onAskFollowup={onAskFollowup} />

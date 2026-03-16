@@ -1,12 +1,13 @@
 'use client';
 
-import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, useCallback, useMemo, type ReactNode } from 'react';
 import { en } from './en';
 import { zh } from './zh';
 import type { Translations } from './en';
 
 type Locale = 'en' | 'zh';
 
+const DEFAULT_LOCALE: Locale = 'zh';
 const translations: Record<Locale, Translations> = { en, zh };
 
 interface I18nContextValue {
@@ -19,12 +20,19 @@ interface I18nContextValue {
 const I18nContext = createContext<I18nContextValue | null>(null);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem('pathsplit-locale') as Locale) || 'zh';
+  const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
+  const hydrated = useRef(false);
+
+  useEffect(() => {
+    if (hydrated.current) return;
+    hydrated.current = true;
+    const stored = localStorage.getItem('pathsplit-locale') as Locale | null;
+    if (stored && stored !== DEFAULT_LOCALE) {
+      // Sync client preference after hydration to avoid SSR mismatch
+      setLocaleState(stored); // eslint-disable-line react-hooks/set-state-in-effect
+      document.documentElement.lang = stored === 'zh' ? 'zh-CN' : 'en';
     }
-    return 'zh';
-  });
+  }, []);
 
   const setLocale = useCallback((newLocale: Locale) => {
     setLocaleState(newLocale);

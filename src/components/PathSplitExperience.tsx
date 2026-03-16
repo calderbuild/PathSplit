@@ -437,49 +437,49 @@ export function PathSplitExperience() {
   return (
     <main className="pathsplit-shell">
       <LanguageToggle />
-      <section className="pathsplit-hero-grid grid gap-10 xl:grid-cols-[minmax(0,1fr)_27.75rem]">
-        <div className="pathsplit-hero-copy space-y-8">
-          <div className="space-y-5">
+      <section className="pathsplit-hero-grid grid gap-10 xl:grid-cols-[minmax(0,1fr)_26rem]">
+        <div className="pathsplit-hero-copy space-y-10">
+          <div className="space-y-6">
             <div className="pathsplit-product-badge">
               <span className="pathsplit-product-dot" />
               <span>{t.hero.badge}</span>
-              <span className="text-stone-300">·</span>
-              <span className="text-stone-600">{t.hero.badgeSub}</span>
+              <span style={{ color: '#c4b5a3' }}>·</span>
+              <span style={{ color: '#8a7e72' }}>{t.hero.badgeSub}</span>
             </div>
-            <div className="space-y-4">
-              <h1 className="pathsplit-hero-title max-w-4xl font-semibold tracking-[-0.05em] text-stone-950">
+            <div className="space-y-5">
+              <h1 className="pathsplit-hero-title max-w-4xl font-semibold text-stone-950">
                 {t.hero.title.map((line, i) => (
                   <span key={i} className="block md:whitespace-nowrap">{line}</span>
                 ))}
               </h1>
-              <p className="max-w-2xl text-[1.08rem] leading-8 text-stone-700">{t.hero.description}</p>
+              <p className="max-w-xl text-[0.98rem] leading-7 text-stone-600">{t.hero.description}</p>
             </div>
           </div>
 
           <div className="pathsplit-editorial-note">
             <div className="pathsplit-editorial-layout">
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div className="pathsplit-section-kicker">{t.editorial.kicker}</div>
-                <p className="max-w-3xl text-base leading-8 text-stone-700">
+                <p className="max-w-3xl text-[0.92rem] leading-7 text-stone-600">
                   {t.editorial.body}
                 </p>
               </div>
               <div className="pathsplit-mini-card">
                 <div className="pathsplit-meta-label">{t.editorial.whoFor.label}</div>
-                <p className="mt-2 text-sm leading-7 text-stone-700">{t.editorial.whoFor.body}</p>
+                <p className="mt-2 text-[0.84rem] leading-6 text-stone-600">{t.editorial.whoFor.body}</p>
               </div>
               <div className="pathsplit-mini-card">
                 <div className="pathsplit-meta-label">{t.editorial.whatYouGet.label}</div>
-                <p className="mt-2 text-sm leading-7 text-stone-700">{t.editorial.whatYouGet.body}</p>
+                <p className="mt-2 text-[0.84rem] leading-6 text-stone-600">{t.editorial.whatYouGet.body}</p>
               </div>
             </div>
           </div>
 
-          <div className="pathsplit-stat-strip grid gap-6 sm:grid-cols-3">
+          <div className="pathsplit-stat-strip grid gap-0 sm:grid-cols-3">
             {[t.stats.scene, t.stats.perspectives, t.stats.network].map((item) => (
-              <div key={item.label} className="pathsplit-stat-card">
+              <div key={item.label} className="pathsplit-stat-card py-1">
                 <div className="pathsplit-meta-label">{item.label}</div>
-                <div className="mt-3 whitespace-nowrap text-[1.85rem] leading-none font-semibold text-stone-950">
+                <div className="mt-2 whitespace-nowrap text-[1.6rem] leading-none font-semibold tracking-tight text-stone-950">
                   {item.value}
                 </div>
               </div>

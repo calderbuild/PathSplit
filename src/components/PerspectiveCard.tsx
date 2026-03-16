@@ -60,34 +60,34 @@ export function PerspectiveCard({
   }
 
   return (
-    <article className="pathsplit-card flex min-h-[340px] flex-col gap-4">
-      <header className="flex items-start justify-between gap-4">
+    <article className="pathsplit-card flex min-h-[320px] flex-col gap-4">
+      <header className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <AgentAvatar agent={card.meta} />
           <div>
             <div className="pathsplit-meta-label">{statusLabel}</div>
-            <h3 className="mt-1 text-xl font-semibold text-stone-950">{card.meta.label}</h3>
+            <h3 className="mt-1 text-lg font-semibold tracking-tight text-stone-950">{card.meta.label}</h3>
           </div>
         </div>
         <SafetyLabel compact variant={card.meta.memoryMode} />
       </header>
 
-      <div className="space-y-2">
-        <p className="text-sm leading-6 text-stone-700">{card.meta.persona.background}</p>
+      <div className="space-y-1.5">
+        <p className="text-[0.84rem] leading-6 text-stone-600">{card.meta.persona.background}</p>
         <p className="pathsplit-meta-label">{card.meta.persona.currentState}</p>
       </div>
 
-      <div className="flex-1 rounded-[1.6rem] border border-black/6 bg-stone-50/90 p-5">
+      <div className="flex-1 rounded-2xl border border-black/5 bg-stone-50/80 p-4">
         {card.status === 'waiting' ? (
-          <div className="space-y-3">
-            <div className="h-4 w-2/3 animate-pulse rounded-full bg-stone-200" />
-            <div className="h-4 w-full animate-pulse rounded-full bg-stone-200" />
-            <div className="h-4 w-5/6 animate-pulse rounded-full bg-stone-200" />
+          <div className="space-y-2.5">
+            <div className="h-3.5 w-2/3 animate-pulse rounded-full bg-stone-200/80" />
+            <div className="h-3.5 w-full animate-pulse rounded-full bg-stone-200/80" />
+            <div className="h-3.5 w-5/6 animate-pulse rounded-full bg-stone-200/80" />
           </div>
         ) : card.status === 'error' ? (
-          <p className="text-sm leading-7 text-rose-700">{card.error}</p>
+          <p className="text-[0.84rem] leading-6 text-rose-600">{card.error}</p>
         ) : (
-          <p className={`text-base leading-8 text-stone-900 ${isStreaming ? 'streaming-cursor' : ''}`}>{card.content}</p>
+          <p className={`text-[0.92rem] leading-7 text-stone-800 ${isStreaming ? 'streaming-cursor' : ''}`}>{card.content}</p>
         )}
       </div>
 
@@ -97,20 +97,20 @@ export function PerspectiveCard({
       </footer>
 
       {card.status === 'done' ? (
-        <div className="rounded-[1.5rem] border border-black/8 bg-white/70 p-4">
+        <div className="rounded-2xl border border-black/6 bg-white/60 p-4">
           <div className="pathsplit-meta-label">{t.card.followUp}</div>
           <textarea
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
-            className="mt-3 min-h-24 w-full resize-none rounded-[1rem] border border-black/10 bg-stone-50 px-4 py-3 text-sm leading-7 text-stone-900 outline-none transition focus:border-stone-900"
+            className="mt-2.5 min-h-20 w-full resize-none rounded-xl border border-black/8 bg-stone-50 px-3.5 py-3 text-[0.84rem] leading-6 text-stone-900 outline-none transition focus:border-stone-400"
             maxLength={200}
           />
-          <div className="mt-3 flex items-center gap-3">
+          <div className="mt-2.5 flex items-center gap-3">
             <button
               type="button"
               onClick={askFollowup}
               disabled={isAsking}
-              className="rounded-full bg-stone-900 px-4 py-2 text-xs uppercase tracking-[0.22em] text-stone-50 transition hover:bg-stone-800 disabled:opacity-50"
+              className="pathsplit-cta py-2 px-4 text-[0.68rem]"
             >
               {isAsking ? t.card.askingButton : t.card.askButton}
             </button>
@@ -120,9 +120,9 @@ export function PerspectiveCard({
               </span>
             ) : null}
           </div>
-          {followupError ? <p className="mt-3 text-sm leading-7 text-rose-700">{followupError}</p> : null}
+          {followupError ? <p className="mt-2.5 text-[0.84rem] leading-6 text-rose-600">{followupError}</p> : null}
           {answer || isAsking ? (
-            <p className={`mt-4 text-sm leading-7 text-stone-800 ${isStreamingAnswer ? 'streaming-cursor' : ''}`}>{answer}</p>
+            <p className={`mt-3 text-[0.84rem] leading-6 text-stone-700 ${isStreamingAnswer ? 'streaming-cursor' : ''}`}>{answer}</p>
           ) : null}
         </div>
       ) : null}

@@ -131,9 +131,9 @@ export function LiveModePanel({
       <div className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
         <div className="space-y-4">
           <div className="pathsplit-section-kicker">{t.live.kicker}</div>
-          <div className="space-y-3">
-            <h2 className="text-3xl font-semibold text-stone-950">{t.live.title}</h2>
-            <p className="text-base leading-7 text-stone-700">
+          <div className="space-y-2.5">
+            <h2 className="text-2xl font-semibold tracking-tight text-stone-950">{t.live.title}</h2>
+            <p className="text-[0.88rem] leading-6 text-stone-600">
               {t.live.description}
             </p>
           </div>
@@ -186,7 +186,7 @@ export function LiveModePanel({
                 </p>
                 <a
                   href="/api/auth/login?source=live-panel"
-                  className="inline-flex rounded-full bg-stone-900 px-5 py-3 text-xs uppercase tracking-[0.24em] text-stone-50 transition hover:bg-stone-800"
+                  className="pathsplit-cta inline-flex"
                 >
                   {t.live.connectCta}
                 </a>
@@ -293,11 +293,11 @@ export function LiveModePanel({
               type="button"
               onClick={askLiveSelf}
               disabled={!session.connected || isAsking}
-              className="rounded-full bg-[linear-gradient(135deg,#0f172a,#0f766e)] px-6 py-3 text-xs uppercase tracking-[0.24em] text-stone-50 transition hover:translate-y-[-1px] disabled:cursor-not-allowed disabled:opacity-50"
+              className="pathsplit-cta"
             >
               {isAsking ? t.live.askLoading : t.live.askIdle}
             </button>
-            <span className="text-sm leading-7 text-stone-700">
+            <span className="text-[0.8rem] leading-5 text-stone-500">
               {t.live.askHelper}
             </span>
           </div>

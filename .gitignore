@@ -35,3 +35,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# screenshots & audit artifacts
+*.png
+*.jpeg
+
+# docs / reference PDFs
+*.pdf
+
+# local todos
+todos/
