@@ -165,4 +165,32 @@ export const zh: Translations = {
     connectedFallbackName: '已连接的 SecondMe',
     livePlaceholder: '连接后，把你的真实问题问给自己的 SecondMe。',
   },
+
+  crossroad: {
+    kicker: '岔路口对话',
+    title: '你的分身看完三条路径后的反应',
+    description: '你的 SecondMe Agent 会代表你生成第一人称反应，然后三个 persona 会依次回应。',
+    startButton: '开始岔路口对话',
+    userReflecting: '正在生成你的反应...',
+    userReflectionDone: '你的内心反应',
+    personaReplying: '正在回应...',
+  },
+
+  match: {
+    kicker: '反事实社交匹配',
+    loading: '正在寻找走过另一条路的人...',
+    titleMatched: '找到了走过另一条路的人',
+    titleFallback: '知乎上的相关讨论',
+    symmetryLabel: '对称度',
+    reasonLabel: '匹配原因',
+    theirReflectionLabel: 'TA 的反思',
+    nextStepHint: '这是一个真实走过另一条路的人。你们可以在知乎圈子中继续讨论。',
+    zhihuFallbackHint: '暂时没有找到反事实匹配，但知乎上有这些相关讨论：',
+  },
+
+  zhihu: {
+    kicker: '知乎相关讨论',
+    title: '知乎上走过这条路的人',
+    description: '这些知乎用户分享了类似的经历和思考。',
+  },
 };

@@ -83,3 +83,29 @@ export function getFollowupReply(agentId: string, question: string) {
       return '这条人生线暂时还没有准备好追问回复。';
   }
 }
+
+export function getMockUserReflection(topic: string): string {
+  return '我最共鸣张明的路径，因为我也在考虑离开大厂。但看到周舟失败回归的经历，我又开始担心自己是不是高估了能力。李岚说的"把勇气折现成年终奖"也戳中了我，我现在处在还在考虑的阶段，主要情绪是现金流焦虑和身份落差的担心。';
+}
+
+export function getMockPersonaReply(agentId: string, userReflection: string): string {
+  const replies: Record<string, string> = {
+    'founder-still-running':
+      '如果你真的共鸣我这条路，先把个人安全垫准备到 12 到 18 个月。创业前我以为 6 个月够，后来才发现你不是只养自己，你还要给团队留余地。现金流焦虑会比你想象中更持久。',
+    'stayed-in-big-tech':
+      '你说的"还在考虑"其实是个好状态。我当年也是这样，最后发现留下来不是保守，前提是你真的在用这段时间换筹码，而不是把不动解释成深思熟虑。',
+    'failed-and-returned':
+      '你担心高估能力是对的。我当时最大的问题就是把愿景错当 PMF，以为自己执行力够狠就能搞定一切。如果你现在连第一批付费用户都没影子，就别把辞职当成证明勇气的仪式。',
+  };
+
+  return replies[agentId] ?? '这条人生线暂时还没有准备好回应。';
+}
+
+export function getMockCrossroadProfile() {
+  return {
+    resonatedPath: '创业第 3 年，还在硬扛',
+    fearedPath: '创业失败，回到大厂',
+    currentSide: 'considering' as const,
+    keyEmotions: ['现金流焦虑', '身份落差', '后悔'],
+  };
+}

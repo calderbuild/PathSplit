@@ -109,3 +109,44 @@ export interface AgentCardState {
   content: string;
   error?: string;
 }
+
+/** 岔路口画像 */
+export interface CrossroadProfile {
+  userId: string;
+  topic: string;
+  resonatedPath: string;
+  fearedPath: string;
+  currentSide: 'stayed' | 'left' | 'considering' | 'returned';
+  keyEmotions: string[];
+  userReflection: string;
+  narrativeSummaries: Record<string, string>;
+  createdAt: number;
+}
+
+/** 岔路口匹配结果 */
+export interface CrossroadMatch {
+  matchedUserId: string;
+  matchedProfile: CrossroadProfile;
+  matchReason: string;
+  symmetryScore: number;
+}
+
+/** 知乎搜索结果 */
+export interface ZhihuSearchResult {
+  title: string;
+  url: string;
+  excerpt: string;
+  author: string;
+}
+
+/** Phase 2 SSE 事件类型 */
+export type CrossroadSSEEvent =
+  | { type: 'converse_start'; data: { userAgentName: string } }
+  | { type: 'user_agent_chunk'; data: { content: string } }
+  | { type: 'user_agent_done'; data: { reflection: string } }
+  | { type: 'persona_reply_start'; data: { agentId: string; label: string } }
+  | { type: 'persona_reply_chunk'; data: { agentId: string; content: string } }
+  | { type: 'persona_reply_done'; data: { agentId: string } }
+  | { type: 'crossroad_profile'; data: CrossroadProfile }
+  | { type: 'done' }
+  | { type: 'error'; data: { message: string } };

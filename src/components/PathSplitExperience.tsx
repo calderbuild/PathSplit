@@ -9,6 +9,8 @@ import { EvidenceCard } from './EvidenceCard';
 import { LiveModePanel } from './LiveModePanel';
 import { OAuthConversionPanel } from './OAuthConversionPanel';
 import { LanguageToggle } from './LanguageToggle';
+import { CrossroadConversation } from './CrossroadConversation';
+import { ParallelReconnect } from './ParallelReconnect';
 import type {
   AgentCardState,
   EvidenceCard as EvidenceCardType,
@@ -17,6 +19,7 @@ import type {
   FollowupStreamHandlers,
   SSEEvent,
   SecondMeSessionStatus,
+  CrossroadProfile,
 } from '@/lib/types';
 
 function getErrorMessage(
@@ -207,8 +210,11 @@ export function PathSplitExperience() {
     connected: false,
     scope: [],
   });
+  const [crossroadProfile, setCrossroadProfile] = useState<CrossroadProfile | null>(null);
   const resultsRef = useRef<HTMLElement | null>(null);
   const evidenceRef = useRef<HTMLElement | null>(null);
+  const crossroadRef = useRef<HTMLElement | null>(null);
+  const matchRef = useRef<HTMLElement | null>(null);
   const livePanelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -268,6 +274,17 @@ export function PathSplitExperience() {
       block: 'start',
     });
   }, [evidenceCard]);
+
+  useEffect(() => {
+    if (!crossroadProfile) {
+      return;
+    }
+
+    matchRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  }, [crossroadProfile]);
 
   useEffect(() => {
     if (!session.connected || authNotice?.tone !== 'success') {
@@ -352,6 +369,7 @@ export function PathSplitExperience() {
     setEvidenceCard(null);
     setCards([]);
     setRationale('');
+    setCrossroadProfile(null);
 
     try {
       await consumeSseStream(question, {
@@ -539,6 +557,23 @@ export function PathSplitExperience() {
             realCardCount={realCardCount}
             onContinueLive={continueToLive}
           />
+        </section>
+      ) : null}
+      {evidenceCard && cards.length > 0 ? (
+        <section ref={crossroadRef} className="pathsplit-rise">
+          <CrossroadConversation
+            topic={evidenceCard.topic}
+            agents={cards.map((c) => c.meta)}
+            narratives={Object.fromEntries(cards.map((c) => [c.meta.id, c.content]))}
+            onComplete={(profile) => {
+              setCrossroadProfile(profile);
+            }}
+          />
+        </section>
+      ) : null}
+      {crossroadProfile ? (
+        <section ref={matchRef} className="pathsplit-rise">
+          <ParallelReconnect profile={crossroadProfile} />
         </section>
       ) : null}
       {showLivePanel ? (

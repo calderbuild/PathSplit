@@ -34,8 +34,16 @@ export function generateEvidenceCard(topic: string, agents: AgentMeta[], narrati
 
   return {
     topic,
-    summary: '三条路径没有哪条天然正确，但每条都把“代价”说得更具体了。',
+    summary: '三条路径没有哪条天然正确，但每条都把”代价”说得更具体了。',
     paths,
     generatedAt: new Date().toISOString(),
   };
+}
+
+export function extractNarrativeSummary(content: string): string {
+  const sentences = content.split(/(?<=。|！|？)/).map((s) => s.trim()).filter(Boolean);
+  if (sentences.length <= 2) {
+    return content;
+  }
+  return sentences.slice(0, 2).join('') + '...';
 }

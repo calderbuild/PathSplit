@@ -171,6 +171,34 @@ export const en = {
     connectedFallbackName: 'Connected SecondMe',
     livePlaceholder: 'After connecting, ask your real question to your own SecondMe.',
   },
+
+  crossroad: {
+    kicker: 'Crossroad Conversation',
+    title: 'Your avatar\'s reaction after seeing three paths',
+    description: 'Your SecondMe Agent will generate a first-person reaction, then the three personas will respond in turn.',
+    startButton: 'Start Crossroad Conversation',
+    userReflecting: 'Generating your reaction...',
+    userReflectionDone: 'Your inner reaction',
+    personaReplying: 'Replying...',
+  },
+
+  match: {
+    kicker: 'Counterfactual Social Matching',
+    loading: 'Looking for someone who took the other path...',
+    titleMatched: 'Found someone who took the other path',
+    titleFallback: 'Related discussions on Zhihu',
+    symmetryLabel: 'Symmetry',
+    reasonLabel: 'Match reason',
+    theirReflectionLabel: 'Their reflection',
+    nextStepHint: 'This is someone who actually took the other path. You can continue the discussion in Zhihu circles.',
+    zhihuFallbackHint: 'No counterfactual match found yet, but here are related discussions on Zhihu:',
+  },
+
+  zhihu: {
+    kicker: 'Related Zhihu Discussions',
+    title: 'People on Zhihu who took this path',
+    description: 'These Zhihu users shared similar experiences and reflections.',
+  },
 };
 
 export type Translations = typeof en;

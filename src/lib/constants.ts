@@ -1,5 +1,11 @@
 import type { AgentMeta, PresetTopic } from './types';
 
+export const PRODUCT_MESSAGING = {
+  badge: '反事实社交匹配',
+  tagline: '你没走的路上，有人在等你',
+  description: 'PathSplit 是一个 A2A 人生决策产品。先看三条平行人生路径，再通过岔路口对话找到走过另一条路的真人。',
+};
+
 export const PRESET_TOPICS: PresetTopic[] = [
   {
     id: 'startup-main',
