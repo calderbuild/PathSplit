@@ -521,6 +521,26 @@ export function PathSplitExperience() {
         />
       </section>
 
+      <section className="pathsplit-card pathsplit-journey-band">
+        <div className="pathsplit-journey-intro">
+          <div className="pathsplit-section-kicker">{t.journey.kicker}</div>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-stone-950">{t.journey.title}</h2>
+          <p className="mt-3 max-w-3xl text-[0.9rem] leading-7 text-stone-600">{t.journey.note}</p>
+        </div>
+
+        <div className="pathsplit-journey-grid">
+          {t.journey.steps.map((step, index) => (
+            <article key={step.title} className="pathsplit-journey-step">
+              <div className="pathsplit-journey-index">{String(index + 1).padStart(2, '0')}</div>
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold tracking-tight text-stone-950">{step.title}</h3>
+                <p className="text-[0.84rem] leading-6 text-stone-600">{step.body}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
       {authNotice ? (
         <section
           className={`rounded-[1.8rem] border p-5 text-sm leading-7 ${

@@ -23,7 +23,7 @@ describe('generateEvidenceCard', () => {
 
     expect(card.paths).toHaveLength(3);
     expect(card.paths[0]?.keyNumbers).toContain('11 万');
-    expect(card.paths[0]?.ifAgain).toContain('如果重来');
+    expect(card.paths[0]?.ifAgain).toBe('我还是会走');
     expect(card.summary).toContain('代价');
   });
 });

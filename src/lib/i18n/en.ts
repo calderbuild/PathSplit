@@ -4,7 +4,18 @@ export const en = {
     badgeSub: 'Zhihu x Second Me Hackathon Entry',
     title: ['Turn life decisions,', 'from search results', 'into a queryable', 'human network.'],
     description:
-      'PathSplit is a life-decision product. You first see three parallel life paths, then connect the evidence card to your own SecondMe to ask deeper questions.',
+      'PathSplit behaves more like an editorial decision dossier than a chatbot. You first watch three parallel lives split apart, then decide whether this evidence card deserves a deeper conversation with your own SecondMe.',
+  },
+
+  journey: {
+    kicker: 'Experience Rhythm',
+    title: 'See the cost first. Decide about the human network second.',
+    note: "PathSplit doesn't shove you into a login wall. SecondMe only matters in the final stretch, when you want to keep asking as yourself.",
+    steps: [
+      { title: 'Unfold', body: 'Three parallel lives lay out the tradeoffs, illusions, and retreat costs.' },
+      { title: 'Mirror', body: 'A crossroad preview lets your own perspective push back before you commit.' },
+      { title: 'Connect', body: 'If you still want more, hand the evidence card to your own SecondMe and enter the human network.' },
+    ],
   },
 
   editorial: {
@@ -17,7 +28,7 @@ export const en = {
   stats: {
     scene: { label: 'Primary Scenario', value: 'Big Tech to Startup' },
     perspectives: { label: 'Parallel Views', value: '3 Life Paths' },
-    network: { label: 'Human Network', value: 'OAuth Follow-up' },
+    network: { label: 'Human Network', value: 'Live Follow-up' },
   },
 
   input: {
@@ -25,17 +36,17 @@ export const en = {
     title: 'Describe your dilemma in detail',
     description:
       "This product currently focuses on the 'Big Tech to Startup' scenario. Other presets demonstrate PathSplit's product structure but won't go as deep.",
-    explorePill: 'Explore first, then decide whether to connect a real avatar',
+    explorePill: 'See the tension first, decide about the human network after',
     noOauthPill: 'Basic product experience only in current environment',
     oauthConnected: 'SecondMe connected -- real-human follow-up available after results',
-    oauthConnect: 'Connect SecondMe for OAuth login',
+    oauthConnect: 'Connect my SecondMe first',
     fieldLabel: 'Your Question',
     placeholder:
       "E.g.: I've been a PM at a big tech company for 6 years. Pay is fine, but I feel like I'm maintaining someone else's growth. I want to start a company, but I still have a mortgage.",
     submitIdle: 'Start Exploring Paths',
     submitLoading: 'Unfolding three paths...',
     helperText:
-      "We'll return 3 paths, not 1 answer; after the evidence card appears, we guide you to real-human follow-up.",
+      "You'll get three paths instead of one answer. After the evidence card appears, you can decide whether it deserves the real-human lane.",
   },
 
   presets: {
@@ -78,23 +89,30 @@ export const en = {
 
   oauth: {
     kicker: 'Next Step',
-    titleConnected: 'Sync this evidence card to your real avatar',
-    titleDisconnected: 'Connect SecondMe to plug PathSplit into the human network',
+    titleConnected: 'Hand this evidence card to your real avatar',
+    titleDisconnected: 'This evidence card is only the first half',
+    livePromptIntro: 'I just reviewed this PathSplit evidence card:',
+    livePromptInstruction: "Don't repeat the card. From my actual situation, answer two things:\n1. What's the single most important risk I should validate right now?\n2. What's the one action worth taking in the next 7 days?",
     descConnected:
-      "Among the three paths above, authorized real avatars and non-realtime path data coexist. The next step isn't to keep reading samples -- it's to ask your own SecondMe with this evidence card and your real situation.",
+      "The sample paths above already did their job. Now the move is to bring this evidence card, along with your actual situation, to your own SecondMe.",
     descDisconnected:
-      "You've seen 3 parallel life paths. Now connect SecondMe to register this experience as an OAuth login and continue asking real avatars.",
-    step1: 'Your SecondMe avatar reads your real memories and generates a reaction unique to you -- not generic advice.',
-    step2: 'The 3 personas respond directly to your situation. The crossroad conversation is different for everyone.',
-    step3Connected:
-      'Sync the evidence card into the real-human pipeline and keep asking your own avatar.',
-    step3Disconnected:
-      'This decision experience gets written into your AI avatar memory -- next time it will remember you faced this crossroad.',
+      "You've already seen three parallel lives and one evidence card. From here you can either stop at the sample layer, or pass it into your own SecondMe and let the dilemma enter the human network.",
+    nowTitle: 'Already in your hands',
+    now1: 'Three parallel lives pulling in different directions',
+    now2: 'One evidence card that makes the costs concrete',
+    now3: 'One crossroad preview that works before login',
+    unlockTitleConnected: 'Now you can continue',
+    unlockTitleDisconnected: 'After connecting',
+    unlock1: 'The evidence card and your main question move into your own SecondMe',
+    unlock2: 'The experience shifts from sample projection to live first-person follow-up',
+    unlock3Connected: 'This door is already open. You can ask deeper right now.',
+    unlock3Disconnected:
+      'This connection is also counted as a valid SecondMe OAuth entry, without forcing you to replay the earlier steps.',
     ctaConnected: 'Ask my SecondMe with this evidence card',
     ctaConnectedHelper: 'Auto-fills the suggested question into the real-human section.',
-    ctaDisconnected: 'Let my avatar join this conversation',
+    ctaDisconnected: 'Give this evidence card to my avatar',
     ctaDisconnectedHelper:
-      'After connecting, your avatar reads your real memories -- the crossroad conversation becomes uniquely yours.',
+      'After you return, your progress stays here and you can continue straight into the real-human follow-up.',
     noOauth:
       "OAuth isn't configured in this environment. This section demonstrates the conversion placement; for production, add SECONDME_CLIENT_ID / SECONDME_CLIENT_SECRET.",
     chipReal: 'Real',
@@ -113,12 +131,23 @@ export const en = {
     tokenExpiry: 'Token expires',
     disconnect: 'Disconnect',
     connectPrompt:
-      'After connecting, you can ask your SecondMe directly with the evidence card and main question, instead of staying with the non-realtime path data above.',
-    connectCta: 'Connect SecondMe -- enter the human pipeline',
+      'After connecting, you can ask your own SecondMe with the evidence card and the main question, instead of staying with the sample paths above.',
+    connectCta: 'Connect SecondMe and continue',
+    lockedTitle: 'Carry this evidence card into your own human network',
+    lockedDescription:
+      "Everything above behaves like a beautifully annotated sample book. Here there is only one character left: your own SecondMe. After connecting, the question stops being 'how did they live?' and becomes 'what should I do now?'",
+    lockedPoint1: 'Bring the evidence card and main question into your own avatar memory',
+    lockedPoint2: 'Switch from sample reading to live first-person follow-up',
+    lockedPoint3: 'This step also counts as a valid SecondMe OAuth entry',
     slotKicker: 'Parallel Real-Human Slots',
     slotDescription:
       'Log into 3 SecondMe accounts, each bound to a life path. After binding, /api/explore prefers real avatars; missing slots auto-fallback to memory perspective.',
     slotReady: 'ready',
+    slotReadyVia: (source: string) => `ready via ${source}`,
+    slotEmpty: 'empty slot',
+    slotSeeds: (count: number) => `seeds ${count}`,
+    slotSynced: (time: string) => `synced ${time}`,
+    slotScopes: (scopes: string) => `scopes: ${scopes}`,
     questionKicker: 'Real-Human Question',
     questionTitle: 'Sync the main question to your SecondMe',
     syncButton: 'Sync main question',
@@ -173,26 +202,32 @@ export const en = {
   },
 
   crossroad: {
-    kicker: 'Crossroad Conversation',
-    title: 'Your avatar\'s reaction after seeing three paths',
-    description: 'Your SecondMe Agent will generate a first-person reaction, then the three personas will respond in turn.',
-    idleHint: 'Your SecondMe avatar will read the three paths and speak your real reaction -- then the three personas respond directly to your situation.',
+    kicker: 'Crossroad Preview',
+    title: 'Let a first-person voice say the conflict out loud first',
+    description:
+      'No login yet. This stage turns the three paths you just saw into one first-person reaction, then lets the three perspectives answer back so you can feel which route actually hurts.',
+    idleHint:
+      "This isn't the final live-human lane. It's a rehearsal: hear yourself, hear the pushback, then leave behind a crossroad profile.",
     startButton: 'Start Crossroad Conversation',
+    step1: 'Hear yourself',
+    step2: 'Hear the pushback',
+    step3: 'Leave a profile',
     userReflecting: 'Generating your reaction...',
-    userReflectionDone: 'Your inner reaction',
+    userReflectionDone: 'Your first reaction',
     personaReplying: 'Replying...',
   },
 
   match: {
-    kicker: 'Counterfactual Social Matching',
+    kicker: 'Counterfactual Echo',
     loading: 'Looking for someone who took the other path...',
-    titleMatched: 'Found someone who took the other path',
-    titleFallback: 'Related discussions on Zhihu',
+    titleMatched: 'Now find a real person who actually walked the other road',
+    titleFallback: 'For now, look for echoes in Zhihu\'s real discussions',
     symmetryLabel: 'Symmetry',
     reasonLabel: 'Match reason',
     theirReflectionLabel: 'Their reflection',
-    nextStepHint: 'This is someone who actually took the other path. You can continue the discussion in Zhihu circles.',
-    zhihuFallbackHint: 'No counterfactual match found yet, but here are related discussions on Zhihu:',
+    nextStepHint: 'This is someone who actually took the other path. The next step is to let the people behind the agents reconnect for real.',
+    zhihuFallbackHint: "No counterfactual match yet, but Zhihu's real discussion graph is already echoing this dilemma:",
+    authorPrefix: 'Author',
   },
 
   zhihu: {

@@ -174,7 +174,7 @@ export function LiveModePanel({
                   </a>
                   {session.scope.length > 0 ? (
                     <div className="pathsplit-meta-chip">
-                      scopes: {session.scope.join(', ')}
+                      {t.live.slotScopes(session.scope.join(', '))}
                     </div>
                   ) : null}
                 </div>
@@ -219,7 +219,7 @@ export function LiveModePanel({
                         <div>
                           <div className="text-sm font-semibold text-stone-950">{slotLabel(slot.agentId)}</div>
                           <div className="pathsplit-meta-label mt-1">
-                            {slot.configured ? `ready via ${slot.source}` : 'empty slot'}
+                            {slot.configured ? t.live.slotReadyVia(slot.source ?? 'local') : t.live.slotEmpty}
                           </div>
                         </div>
                         <button
@@ -240,7 +240,7 @@ export function LiveModePanel({
 
                       <div className="mt-3 flex flex-wrap gap-2">
                         <span className="pathsplit-meta-chip">
-                          seeds {slot.memoryCount}
+                          {t.live.slotSeeds(slot.memoryCount)}
                         </span>
                         {slot.slotName ? (
                           <span className="pathsplit-meta-chip">
@@ -249,7 +249,7 @@ export function LiveModePanel({
                         ) : null}
                         {slot.updatedAt ? (
                           <span className="pathsplit-meta-chip">
-                            synced {formatSlotUpdate(slot.updatedAt)}
+                            {t.live.slotSynced(formatSlotUpdate(slot.updatedAt))}
                           </span>
                         ) : null}
                       </div>
@@ -265,50 +265,86 @@ export function LiveModePanel({
         </div>
 
         <div className="rounded-[2rem] border border-black/8 bg-white/75 p-5">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
+          {session.connected ? (
+            <>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <div className="pathsplit-meta-label">{t.live.questionKicker}</div>
+                  <div className="mt-1 text-lg font-semibold text-stone-950">{t.live.questionTitle}</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setDraft(question)}
+                  className="rounded-full border border-black/10 px-4 py-2 text-xs uppercase tracking-[0.2em] text-stone-600 transition hover:border-black/20 hover:text-stone-950"
+                >
+                  {t.live.syncButton}
+                </button>
+              </div>
+
+              <textarea
+                value={draft}
+                onChange={(event) => setDraft(event.target.value)}
+                className="mt-4 min-h-40 w-full resize-none rounded-[1.4rem] border border-black/10 bg-stone-50 px-5 py-4 text-sm leading-8 text-stone-900 outline-none transition focus:border-stone-900"
+                placeholder={t.misc.livePlaceholder}
+                maxLength={500}
+              />
+
+              <div className="mt-4 flex flex-wrap items-center gap-4">
+                <button
+                  type="button"
+                  onClick={askLiveSelf}
+                  disabled={isAsking}
+                  className="pathsplit-cta"
+                >
+                  {isAsking ? t.live.askLoading : t.live.askIdle}
+                </button>
+                <span className="text-[0.8rem] leading-5 text-stone-500">
+                  {t.live.askHelper}
+                </span>
+              </div>
+
+              {error ? <p className="mt-4 text-sm leading-7 text-rose-700">{error}</p> : null}
+              {answer ? (
+                <div className="mt-5 rounded-[1.5rem] border border-emerald-200 bg-emerald-50/80 p-5">
+                  <div className="pathsplit-meta-label text-emerald-800">{t.live.replyLabel}</div>
+                  <p className="mt-3 text-sm leading-8 text-stone-800">{answer}</p>
+                </div>
+              ) : null}
+            </>
+          ) : (
+            <div className="pathsplit-live-locked">
               <div className="pathsplit-meta-label">{t.live.questionKicker}</div>
-              <div className="mt-1 text-lg font-semibold text-stone-950">{t.live.questionTitle}</div>
+              <div className="mt-2 text-lg font-semibold text-stone-950">{t.live.lockedTitle}</div>
+              <p className="mt-3 text-[0.88rem] leading-7 text-stone-600">{t.live.lockedDescription}</p>
+
+              <div className="mt-5 grid gap-3">
+                {[t.live.lockedPoint1, t.live.lockedPoint2, t.live.lockedPoint3].map((item, index) => (
+                  <div key={item} className="pathsplit-live-locked-row">
+                    <span className="pathsplit-live-locked-index">{index + 1}</span>
+                    <p className="text-[0.84rem] leading-6 text-stone-700">{item}</p>
+                  </div>
+                ))}
+              </div>
+
+              {session.available ? (
+                <div className="mt-5 flex flex-wrap items-center gap-4">
+                  <a
+                    href="/api/auth/login?source=live-panel"
+                    className="pathsplit-cta"
+                  >
+                    {t.live.connectCta}
+                  </a>
+                  <span className="text-[0.8rem] leading-5 text-stone-500">
+                    {t.live.connectPrompt}
+                  </span>
+                </div>
+              ) : (
+                <p className="mt-5 text-[0.84rem] leading-6 text-stone-500">
+                  {t.live.noConfig}
+                </p>
+              )}
             </div>
-            <button
-              type="button"
-              onClick={() => setDraft(question)}
-              className="rounded-full border border-black/10 px-4 py-2 text-xs uppercase tracking-[0.2em] text-stone-600 transition hover:border-black/20 hover:text-stone-950"
-            >
-              {t.live.syncButton}
-            </button>
-          </div>
-
-          <textarea
-            value={draft}
-            onChange={(event) => setDraft(event.target.value)}
-            disabled={!session.connected}
-            className="mt-4 min-h-40 w-full resize-none rounded-[1.4rem] border border-black/10 bg-stone-50 px-5 py-4 text-sm leading-8 text-stone-900 outline-none transition focus:border-stone-900 disabled:cursor-not-allowed disabled:opacity-60"
-            placeholder={t.misc.livePlaceholder}
-            maxLength={500}
-          />
-
-          <div className="mt-4 flex flex-wrap items-center gap-4">
-            <button
-              type="button"
-              onClick={askLiveSelf}
-              disabled={!session.connected || isAsking}
-              className="pathsplit-cta"
-            >
-              {isAsking ? t.live.askLoading : t.live.askIdle}
-            </button>
-            <span className="text-[0.8rem] leading-5 text-stone-500">
-              {t.live.askHelper}
-            </span>
-          </div>
-
-          {error ? <p className="mt-4 text-sm leading-7 text-rose-700">{error}</p> : null}
-          {answer ? (
-            <div className="mt-5 rounded-[1.5rem] border border-emerald-200 bg-emerald-50/80 p-5">
-              <div className="pathsplit-meta-label text-emerald-800">{t.live.replyLabel}</div>
-              <p className="mt-3 text-sm leading-8 text-stone-800">{answer}</p>
-            </div>
-          ) : null}
+          )}
         </div>
       </div>
     </section>

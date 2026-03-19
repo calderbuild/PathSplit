@@ -100,50 +100,61 @@ export function CrossroadConversation({ topic, agents, narratives, onComplete }:
   };
 
   return (
-    <div className="space-y-6">
-      <div className="border-l-4 border-amber-500 pl-4">
-        <div className="text-sm font-medium text-gray-500 mb-1">{t.crossroad?.kicker ?? '岔路口对话'}</div>
-        <h3 className="text-xl font-semibold text-gray-900">{t.crossroad?.title ?? '你的分身看完三条路径后的反应'}</h3>
-        <p className="text-sm text-gray-600 mt-2">
-          {t.crossroad?.description ?? '你的 SecondMe Agent 会代表你生成第一人称反应，然后三个 persona 会依次回应。'}
+    <section className="pathsplit-card space-y-6">
+      <div className="space-y-3">
+        <div className="pathsplit-section-kicker">{t.crossroad.kicker}</div>
+        <h3 className="text-2xl font-semibold tracking-tight text-stone-950">{t.crossroad.title}</h3>
+        <p className="max-w-3xl text-[0.9rem] leading-7 text-stone-600">
+          {t.crossroad.description}
         </p>
       </div>
 
+      <div className="pathsplit-crossroad-steps">
+        {[t.crossroad.step1, t.crossroad.step2, t.crossroad.step3].map((step, index) => (
+          <div key={step ?? index} className="pathsplit-crossroad-step">
+            <span className="pathsplit-crossroad-index">{String(index + 1).padStart(2, '0')}</span>
+            <span className="text-[0.78rem] tracking-[0.12em] text-stone-600 uppercase">{step}</span>
+          </div>
+        ))}
+      </div>
+
       {currentPhase === 'idle' && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 space-y-4">
-          <p className="text-sm text-amber-900 leading-6">
-            {t.crossroad?.idleHint ?? '你的 SecondMe 分身将读取三条路径，说出你的真实反应——然后三个 persona 会直接回应你的处境。'}
+        <div className="pathsplit-crossroad-intro space-y-4">
+          <p className="text-[0.9rem] leading-7 text-stone-700">
+            {t.crossroad.idleHint}
           </p>
           <button
             onClick={startConversation}
             className="pathsplit-cta"
           >
-            {t.crossroad?.startButton ?? '开始岔路口对话'}
+            {t.crossroad.startButton}
           </button>
         </div>
       )}
 
       {currentPhase !== 'idle' && (
         <div className="space-y-4">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div className="text-sm font-medium text-blue-900 mb-2">
-              {currentPhase === 'user-reflecting' ? '正在生成你的反应...' : '你的内心反应'}
+          <div className="pathsplit-crossroad-reaction">
+            <div className="pathsplit-meta-label text-amber-800 mb-2">
+              {currentPhase === 'user-reflecting'
+                ? t.crossroad.userReflecting
+                : t.crossroad.userReflectionDone}
             </div>
-            <div className="text-gray-800 whitespace-pre-wrap">{userReflection || '...'}</div>
+            <div className="text-stone-800 whitespace-pre-wrap text-[0.9rem] leading-7">{userReflection || '...'}</div>
           </div>
 
           {currentPhase !== 'user-reflecting' && (
-            <div className="space-y-3">
+            <div className="grid gap-3 lg:grid-cols-3">
               {agents.map((agent) => {
                 const reply = personaReplies[agent.id];
                 const isReplying = currentReplyingAgent === agent.id;
 
                 return (
-                  <div key={agent.id} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                    <div className="text-sm font-medium text-gray-900 mb-2">
-                      {agent.label} {isReplying && '正在回应...'}
+                  <div key={agent.id} className="pathsplit-crossroad-reply">
+                    <div className="text-sm font-medium text-stone-900 mb-2">
+                      {agent.label} {isReplying && t.crossroad.personaReplying}
                     </div>
-                    <div className="text-gray-700 whitespace-pre-wrap">{reply || (isReplying ? '...' : '')}</div>
+                    <div className="text-stone-700 whitespace-pre-wrap text-[0.84rem] leading-6">{reply || (isReplying ? '...' : '')}</div>
                   </div>
                 );
               })}
@@ -151,6 +162,6 @@ export function CrossroadConversation({ topic, agents, narratives, onComplete }:
           )}
         </div>
       )}
-    </div>
+    </section>
   );
 }

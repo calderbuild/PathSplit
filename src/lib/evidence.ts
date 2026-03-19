@@ -16,7 +16,7 @@ function lastSentence(content: string) {
 
 function extractIfAgain(content: string) {
   const match = content.match(/如果重来(?:一次)?，?([^。！？]+)/);
-  return match ? `如果重来，${match[1].trim()}` : '他没有直接回答如果重来。';
+  return match ? match[1].trim() : '他没有直接回答这个问题。';
 }
 
 export function generateEvidenceCard(topic: string, agents: AgentMeta[], narratives: Map<string, string>): EvidenceCard {
