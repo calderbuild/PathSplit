@@ -1,16 +1,31 @@
+interface UserShade {
+  shadeName: string;
+  shadeContent: string;
+  sourceTopics: string[];
+  confidenceLevel: string;
+}
+
 export function getUserAgentReflectionPrompt(
   userQuestion: string,
   narratives: Record<string, { label: string; content: string }>,
+  shades?: UserShade[],
 ): string {
   const narrativeTexts = Object.entries(narratives)
     .map(([_, { label, content }]) => `【${label}】\n${content}`)
     .join('\n\n');
 
+  const shadesSection = shades && shades.length > 0
+    ? `\n你的真实背景（来自你的 SecondMe 记忆，请结合这些背景生成反应）：\n${shades
+        .slice(0, 3)
+        .map((s) => `- ${s.shadeName}：${s.shadeContent}（关注话题：${s.sourceTopics.slice(0, 3).join('、')}）`)
+        .join('\n')}\n`
+    : '';
+
   return `你是用户的 SecondMe Agent，代表用户本人的视角。用户刚刚看完了三条平行人生路径的叙事，现在需要你以第一人称生成用户的内心反应。
 
 用户的原始问题：
 ${userQuestion}
-
+${shadesSection}
 三条平行人生路径：
 ${narrativeTexts}
 

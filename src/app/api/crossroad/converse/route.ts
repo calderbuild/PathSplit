@@ -4,7 +4,7 @@ import { getMockUserReflection, getMockPersonaReply, getMockCrossroadProfile } f
 import { getUserAgentReflectionPrompt, getPersonaReplyPrompt, extractCrossroadProfilePrompt } from '@/lib/crossroad-prompts';
 import { redactErrorMessage } from '@/lib/safety';
 import { ensureFreshSecondMeSession, readSecondMeSession } from '@/lib/auth';
-import { ingestSecondMeAgentMemory } from '@/lib/secondme';
+import { ingestSecondMeAgentMemory, getUserShades, streamSecondMeChat, getSecondMeFollowupModel } from '@/lib/secondme';
 import type { CrossroadSSEEvent, AgentMeta, CrossroadProfile } from '@/lib/types';
 
 export const runtime = 'nodejs';
@@ -57,9 +57,37 @@ export async function POST(request: NextRequest) {
 
   (async () => {
     try {
+      // 有 session 时获取用户兴趣标签，注入分身反应 prompt
+      const shades = accessToken
+        ? await getUserShades(accessToken).catch(() => [])
+        : [];
+
       await send({ type: 'converse_start', data: { userAgentName: '你的 SecondMe' } });
 
-      const userReflection = getMockUserReflection(topic);
+      let userReflection: string;
+      if (accessToken) {
+        // real 模式：用 SecondMe Chat API + shades 生成个性化反应
+        const narrativesMap: Record<string, { label: string; content: string }> = {};
+        agents.forEach((agent) => {
+          narrativesMap[agent.id] = { label: agent.label, content: narratives[agent.id] ?? '' };
+        });
+        const prompt = getUserAgentReflectionPrompt(topic, narrativesMap, shades);
+        userReflection = '';
+        for await (const chunk of streamSecondMeChat(accessToken, {
+          message: prompt,
+          model: getSecondMeFollowupModel(),
+        })) {
+          userReflection += chunk;
+          await send({ type: 'user_agent_chunk', data: { content: chunk } });
+        }
+        userReflection = userReflection.trim() || getMockUserReflection(topic);
+      } else {
+        // mock 模式
+        userReflection = getMockUserReflection(topic);
+        for await (const chunk of streamMockText(userReflection)) {
+          await send({ type: 'user_agent_chunk', data: { content: chunk } });
+        }
+      }
       for await (const chunk of streamMockText(userReflection)) {
         await send({ type: 'user_agent_chunk', data: { content: chunk } });
       }

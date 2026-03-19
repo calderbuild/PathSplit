@@ -195,6 +195,26 @@ export async function refreshSecondMeToken(refreshToken: string) {
   } satisfies SecondMeTokenPayload;
 }
 
+export async function getUserShades(accessToken: string) {
+  const response = await fetch(`${getSecondMeApiBase()}/api/secondme/user/shades`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  const data = await readEnvelope<{
+    shades: Array<{
+      shadeName: string;
+      shadeContent: string;
+      sourceTopics: string[];
+      confidenceLevel: string;
+      hasPublicContent: boolean;
+    }>;
+  }>(response);
+
+  return data.shades.filter((s) => s.hasPublicContent);
+}
+
 export async function getSecondMeUserInfo(accessToken: string) {
   const response = await fetch(`${getSecondMeApiBase()}/api/secondme/user/info`, {
     headers: {
