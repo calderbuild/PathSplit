@@ -84,17 +84,17 @@ export const en = {
       "Among the three paths above, authorized real avatars and non-realtime path data coexist. The next step isn't to keep reading samples -- it's to ask your own SecondMe with this evidence card and your real situation.",
     descDisconnected:
       "You've seen 3 parallel life paths. Now connect SecondMe to register this experience as an OAuth login and continue asking real avatars.",
-    step1: "Keep the first-screen experience intact -- don't block judges behind a login wall.",
-    step2: 'Convert to OAuth after the evidence card appears -- stronger value perception, less drop-off.',
+    step1: 'Your SecondMe avatar reads your real memories and generates a reaction unique to you -- not generic advice.',
+    step2: 'The 3 personas respond directly to your situation. The crossroad conversation is different for everyone.',
     step3Connected:
-      "Now sync the evidence card directly into the real-human pipeline -- prove this isn't just static content.",
+      'Sync the evidence card into the real-human pipeline and keep asking your own avatar.',
     step3Disconnected:
-      'After connecting, enter the real-human pipeline immediately -- no need to restart exploration.',
+      'This decision experience gets written into your AI avatar memory -- next time it will remember you faced this crossroad.',
     ctaConnected: 'Ask my SecondMe with this evidence card',
     ctaConnectedHelper: 'Auto-fills the suggested question into the real-human section.',
-    ctaDisconnected: 'Connect SecondMe for OAuth login',
+    ctaDisconnected: 'Let my avatar join this conversation',
     ctaDisconnectedHelper:
-      'When you return, your product context is preserved -- you can jump straight into real-human follow-up.',
+      'After connecting, your avatar reads your real memories -- the crossroad conversation becomes uniquely yours.',
     noOauth:
       "OAuth isn't configured in this environment. This section demonstrates the conversion placement; for production, add SECONDME_CLIENT_ID / SECONDME_CLIENT_SECRET.",
     chipReal: 'Real',
@@ -176,6 +176,7 @@ export const en = {
     kicker: 'Crossroad Conversation',
     title: 'Your avatar\'s reaction after seeing three paths',
     description: 'Your SecondMe Agent will generate a first-person reaction, then the three personas will respond in turn.',
+    idleHint: 'Your SecondMe avatar will read the three paths and speak your real reaction -- then the three personas respond directly to your situation.',
     startButton: 'Start Crossroad Conversation',
     userReflecting: 'Generating your reaction...',
     userReflectionDone: 'Your inner reaction',

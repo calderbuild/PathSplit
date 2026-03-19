@@ -110,12 +110,17 @@ export function CrossroadConversation({ topic, agents, narratives, onComplete }:
       </div>
 
       {currentPhase === 'idle' && (
-        <button
-          onClick={startConversation}
-          className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg font-medium hover:from-amber-600 hover:to-orange-700 transition-all"
-        >
-          {t.crossroad?.startButton ?? '开始岔路口对话'}
-        </button>
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 space-y-4">
+          <p className="text-sm text-amber-900 leading-6">
+            {t.crossroad?.idleHint ?? '你的 SecondMe 分身将读取三条路径，说出你的真实反应——然后三个 persona 会直接回应你的处境。'}
+          </p>
+          <button
+            onClick={startConversation}
+            className="pathsplit-cta"
+          >
+            {t.crossroad?.startButton ?? '开始岔路口对话'}
+          </button>
+        </div>
       )}
 
       {currentPhase !== 'idle' && (

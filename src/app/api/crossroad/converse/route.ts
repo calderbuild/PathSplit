@@ -1,7 +1,10 @@
+import { NextRequest } from 'next/server';
 import { extractNarrativeSummary } from '@/lib/evidence';
 import { getMockUserReflection, getMockPersonaReply, getMockCrossroadProfile } from '@/lib/demo-data';
 import { getUserAgentReflectionPrompt, getPersonaReplyPrompt, extractCrossroadProfilePrompt } from '@/lib/crossroad-prompts';
 import { redactErrorMessage } from '@/lib/safety';
+import { ensureFreshSecondMeSession, readSecondMeSession } from '@/lib/auth';
+import { ingestSecondMeAgentMemory } from '@/lib/secondme';
 import type { CrossroadSSEEvent, AgentMeta, CrossroadProfile } from '@/lib/types';
 
 export const runtime = 'nodejs';
@@ -31,13 +34,16 @@ async function* streamMockText(text: string) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const { topic, agents, narratives, userId } = (await request.json()) as {
     topic: string;
     agents: AgentMeta[];
     narratives: Record<string, string>;
     userId?: string;
   };
+
+  const resolved = await ensureFreshSecondMeSession(readSecondMeSession(request)).catch(() => null);
+  const accessToken = resolved?.session?.accessToken ?? null;
 
   const stream = new TransformStream();
   const writer = stream.writable.getWriter();
@@ -90,6 +96,23 @@ export async function POST(request: Request) {
 
       await send({ type: 'crossroad_profile', data: profile });
       await send({ type: 'done' });
+
+      // fire-and-forget: 写回 Agent Memory，不阻塞 SSE 流
+      if (accessToken) {
+        void ingestSecondMeAgentMemory(accessToken, {
+          channel: { kind: 'decision', id: 'pathsplit-crossroad' },
+          action: 'crossroad_completed',
+          actionLabel: '完成了人生岔路口对话',
+          displayText: `在 PathSplit 探索了「${topic}」，最共鸣「${profile.resonatedPath}」，最担心「${profile.fearedPath}」`,
+          refs: [{
+            objectType: 'crossroad_profile',
+            objectId: profile.userId,
+            contentPreview: profile.userReflection.slice(0, 100),
+          }],
+          importance: 0.8,
+          idempotencyKey: `pathsplit-crossroad-${profile.userId}-${profile.createdAt}`,
+        }).catch((err) => console.error('[crossroad] memory ingest failed:', err));
+      }
     } catch (error) {
       await send({ type: 'error', data: { message: redactErrorMessage(error) } });
     } finally {
